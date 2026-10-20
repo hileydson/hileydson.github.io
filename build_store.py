@@ -1,8 +1,8 @@
 """Builds a Decky Loader store: the official plugin list plus the plugins in my-plugins.json.
 
-Output (served by GitHub Pages, store URL = https://<user>.github.io/<repo>/plugins):
-  site/plugins/index.html           -> GET {store}?sort_by=...   (plugin list)
-  site/plugins/versions/index.html  -> GET {store}/versions      (update check)
+Output (served by GitHub Pages from the hileydson.github.io repo, store URL = https://hileydson.github.io):
+  site/index.html           -> GET {store}?sort_by=...   (plugin list)
+  site/versions/index.html  -> GET {store}/versions      (update check)
 
 The files are JSON; Decky parses the body and ignores the content type.
 """
@@ -109,18 +109,11 @@ def main():
         v = p["versions"][0]
         versions[p["name"]] = [v["name"], v["hash"], v["artifact"]] if v.get("artifact") else [v["name"], v["hash"]]
 
-    write_json(os.path.join(SITE, "plugins", "index.html"), plugins)
-    write_json(os.path.join(SITE, "plugins", "versions", "index.html"), versions)
+    write_json(os.path.join(SITE, "index.html"), plugins)
+    write_json(os.path.join(SITE, "versions", "index.html"), versions)
     open(os.path.join(SITE, ".nojekyll"), "w").close()
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
-        f.write(
-            "<!doctype html><meta charset='utf-8'><title>Decky Store</title>"
-            f"<p>Decky Loader store: {len(plugins)} plugins ({len(mine)} custom), updated {stamp}.</p>"
-            "<p>In Decky: Settings &rarr; Developer &rarr; Store channel <b>Custom</b>, "
-            "URL = this address + <code>/plugins</code></p>"
-        )
-    print(f"Wrote {len(plugins)} plugins to {SITE}")
+    print(f"Wrote {len(plugins)} plugins ({len(mine)} custom) to {SITE} at {stamp}")
 
 
 if __name__ == "__main__":
